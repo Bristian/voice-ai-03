@@ -1,0 +1,11 @@
+# Railway monorepo config
+# Services are added as slices land. Slice 0 has no deployable services yet.
+# Slice 1 will add echokit-server.
+
+[build]
+  builder = "nixpacks"
+
+# ─── Slice 1: echokit-server (not active until slice 1 lands) ───
+# [[services]]
+#   name = "echokit-server"
+#   source = "echokit-server"
