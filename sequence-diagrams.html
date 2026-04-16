@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Car Dealership Voice AI — Sequence Diagrams</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.1/mermaid.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --bg: #0a0c10;
+    --surface: #0f1318;
+    --surface2: #161b22;
+    --border: #21262d;
+    --accent: #e8562a;
+    --accent2: #f0a500;
+    --accent3: #3fb950;
+    --accent4: #58a6ff;
+    --accent5: #bc8cff;
+    --text: #e6edf3;
+    --text-muted: #7d8590;
+    --text-dim: #484f58;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 60px 60px 40px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(232,86,42,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+  h1 span { color: var(--accent); }
+  .header-sub {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+    max-width: 700px;
+  }
+
+  /* TOC */
+  .toc {
+    padding: 28px 60px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .toc-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .toc-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .toc-list a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+  .toc-list a:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(232,86,42,0.06);
+  }
+  .toc-list a .num {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .container { padding: 0 60px 80px; max-width: 1400px; margin: 0 auto; }
+
+  /* ── SECTION ── */
+  .section-header {
+    display: flex; align-items: center; gap: 16px;
+    margin: 56px 0 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(232,86,42,0.1);
+    border: 1px solid rgba(232,86,42,0.3);
+    padding: 2px 8px;
+    border-radius: 3px;
+  }
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .section-desc {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    max-width: 850px;
+  }
+
+  /* ── DIAGRAM PANEL ── */
+  .diagram-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 32px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow-x: auto;
+  }
+  .diagram-panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), transparent);
+  }
+  .diagram-panel .mermaid {
+    background: transparent !important;
+    text-align: center;
+  }
+  .diagram-panel svg {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  /* ── CALLOUT ── */
+  .callout {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: rgba(232,86,42,0.05);
+    border: 1px solid rgba(232,86,42,0.2);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 16px 0;
+  }
+  .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .callout-body { font-size: 13px; color: var(--text-muted); line-height: 1.65; }
+  .callout-body strong { color: var(--text); font-weight: 500; }
+  .callout-blue {
+    background: rgba(88,166,255,0.05);
+    border-color: rgba(88,166,255,0.2);
+    border-left-color: var(--accent4);
+  }
+  .callout-green {
+    background: rgba(63,185,80,0.05);
+    border-color: rgba(63,185,80,0.2);
+    border-left-color: var(--accent3);
+  }
+  .callout-yellow {
+    background: rgba(240,165,0,0.05);
+    border-color: rgba(240,165,0,0.2);
+    border-left-color: var(--accent2);
+  }
+  .callout-purple {
+    background: rgba(188,140,255,0.05);
+    border-color: rgba(188,140,255,0.2);
+    border-left-color: var(--accent5);
+  }
+
+  .callout-body code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    background: var(--surface2);
+    padding: 1px 5px;
+    border-radius: 3px;
+    color: var(--accent4);
+  }
+
+  /* ── LEGEND ── */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 14px 20px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+  .legend-dot {
+    width: 10px; height: 10px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+  .ld-orange { background: rgba(232,86,42,0.2); border-color: var(--accent); }
+  .ld-blue   { background: rgba(88,166,255,0.2); border-color: var(--accent4); }
+  .ld-green  { background: rgba(63,185,80,0.2); border-color: var(--accent3); }
+  .ld-yellow { background: rgba(240,165,0,0.2); border-color: var(--accent2); }
+  .ld-purple { background: rgba(188,140,255,0.2); border-color: var(--accent5); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 60px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-tag">// Sequence Diagrams · v1.0 · Visual Reference</div>
+  <h1>Car Dealership<br><span>Voice AI</span> Sequences</h1>
+  <p class="header-sub">Eight sequence diagrams showing how the services actually talk to each other — from the first Vonage webhook through barge-in, supervisor takeover, and nightly embedding. Companion to <code>architecture-overview.md</code>.</p>
+</header>
+
+<!-- TOC -->
+<nav class="toc">
+  <div class="toc-title">// Jump to diagram</div>
+  <div class="toc-list">
+    <a href="#s1"><span class="num">01</span> Inbound Call Setup</a>
+    <a href="#s2"><span class="num">02</span> Conversational Turn</a>
+    <a href="#s3"><span class="num">03</span> Barge-In</a>
+    <a href="#s4"><span class="num">04</span> RAG Pipeline</a>
+    <a href="#s5"><span class="num">05</span> Voice-to-SQL</a>
+    <a href="#s6"><span class="num">06</span> Human Transfer</a>
+    <a href="#s7"><span class="num">07</span> Supervisor Listen-In</a>
+    <a href="#s8"><span class="num">08</span> Nightly Ingestion</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- LEGEND -->
+  <div class="legend" style="margin-top: 40px;">
+    <div class="legend-item"><span class="legend-dot ld-orange"></span>AI / Agent</div>
+    <div class="legend-item"><span class="legend-dot ld-blue"></span>WebSocket / Signaling</div>
+    <div class="legend-item"><span class="legend-dot ld-green"></span>Caller / PSTN</div>
+    <div class="legend-item"><span class="legend-dot ld-yellow"></span>Vonage / Telephony</div>
+    <div class="legend-item"><span class="legend-dot ld-purple"></span>Data / PostgreSQL</div>
+  </div>
+
+  <!-- ════════════════════════════════════════════
+       SEQUENCE 01 — INBOUND CALL SETUP
+  ═════════════════════════════════════════════ -->
+  <div class="section-header" id="s1">
+    <span class="section-num">01</span>
+    <span class="section-title">Inbound Call Setup — Caller → AI Connected</span>
+  </div>
+  <p class="section-desc">The opening 15–20 seconds: caller dials sales rep's DID, the rep doesn't pick up, Vonage executes the NCCO, and the bidirectional audio WebSocket is established. This is every call's on-ramp.</p>
+
+  <div class="diagram-panel">
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant C as 📞 Caller
+    participant V as Vonage Voice API
+    participant E as echokit-server
+    participant R as Redis
+    participant A as agent-api
+
+    C->>V: Dial sales rep DID
+    V->>V: Ring rep 15–20s (no answer)
+    V->>E: POST /webhooks/answer<br/>{from, to, uuid, conversation_uuid}
+    E->>E: Validate X-Vonage-Signature (HMAC)
+    E->>R: SET session:{call_uuid}<br/>TTL 2h
+    E-->>V: NCCO [talk + connect(websocket)]
+    V->>C: Play "Please hold..."
+    V->>E: WS upgrade /ws/voice<br/>audio/l16;rate=16000
+    E->>A: POST /v1/agent/turn<br/>(empty transcript, opening)
+    A-->>E: greeting_text + TCPA disclosure
+    E->>E: Look up tts_cache:{sha256(greeting)}
+    Note over E,R: Cache HIT — skip OpenAI TTS call
+    E->>V: Stream PCM (greeting)
+    V->>C: Play greeting audio
+    Note over C,V: Caller hears greeting within ~200ms of connect
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <div class="callout-icon">⚡</div>
+    <div class="callout-body">
+      <strong>Why the greeting feels instant:</strong> the opening phrase is pre-generated and stored in <code>tts_cache:*</code> with 24h TTL. First-call latency is effectively the WebSocket handshake plus Redis GET — under 50ms.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════
+       SEQUENCE 02 — CONVERSATIONAL TURN
+  ═════════════════════════════════════════════ -->
+  <div class="section-header" id="s2">
+    <span class="section-num">02</span>
+    <span class="section-title">Conversational Turn — Utterance to Spoken Response</span>
+  </div>
+  <p class="section-desc">The hot path. Every turn after the greeting follows this shape: PCM frames → VAD → streaming STT → intent + parallel RAG/SQL → GPT-4o synthesis → streaming TTS. Target end-to-end: ≤ 800ms perceived.</p>
+
+  <div class="diagram-panel">
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant C as Caller
+    participant V as Vonage
+    participant E as echokit-server
+    participant EL as ElevenLabs STT
+    participant A as agent-api
+    participant OAI as OpenAI<br/>(GPT-4o + TTS)
+    participant PG as Postgres<br/>+ pgvector
+    participant R as Redis
+
+    C->>V: Speak utterance
+    V->>E: PCM frames (20ms / 320B)
+    loop Every 20ms frame
+        E->>E: Silero VAD (5ms, in-proc)
+        E->>EL: Stream PCM chunk
+    end
+    EL-->>E: transcript_partial...
+    Note over E: 600ms silence = utterance end
+    EL-->>E: transcript_final (confidence ≥ 0.75)
+    E->>A: POST /v1/agent/turn<br/>{transcript, session_entities, history}
+
+    par Track A — RAG (parallel)
+        A->>R: GET embed_cache:{sha256(q)}
+        alt cache miss
+            A->>OAI: embeddings (text-embedding-3-small)
+            OAI-->>A: 1536-dim vector
+            A->>R: SET embed_cache
+        end
+        A->>PG: pgvector HNSW search (top-k=5)
+        PG-->>A: 5 chunks
+        A->>A: Cross-encoder rerank → top-3
+    and Track B — Voice-to-SQL
+        A->>OAI: GPT-4o-mini<br/>(intent + entities + SQL)
+        OAI-->>A: {sql, params}
+        A->>A: Validate SQL (guardrails)
+        A->>R: GET vehicle_query:{hash}
+        alt cache miss
+            A->>PG: Execute parameterized query
+            PG-->>A: vehicle rows
+            A->>R: SET vehicle_query (TTL 5m)
+        end
+    end
+
+    A->>OAI: GPT-4o synthesis<br/>(RAG chunks + vehicles + history)
+    OAI-->>A: response_text (≤ 50 words)
+    A-->>E: {response_text, intent, vehicles, entities}
+
+    E->>R: GET tts_cache:{sha256(response)}
+    alt cache hit
+        R-->>E: PCM blob
+    else cache miss
+        E->>OAI: TTS stream (tts-1, pcm 24kHz)
+        OAI-->>E: PCM chunks (streamed)
+        E->>E: ffmpeg → 16kHz mono
+        E->>R: SET tts_cache (TTL 24h)
+    end
+    E->>V: Stream PCM out (first chunk ~150ms)
+    V->>C: Play response audio
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="callout-icon">⚡</div>
+    <div class="callout-body">
+      <strong>The <code>par</code> block is the whole ballgame.</strong> RAG and SQL must run concurrently via <code>Promise.all</code> / <code>asyncio.gather</code>. Running them serially blows the latency budget by ~200ms on complex queries. The synthesis LLM call is the only mandatory serial step afterward.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════
+       SEQUENCE 03 — BARGE-IN
+  ═════════════════════════════════════════════ -->
+  <div class="section-header" id="s3">
+    <span class="section-num">03</span>
+    <span class="section-title">Barge-In — Caller Interrupts TTS Playback</span>
+  </div>
+  <p class="section-desc">If the caller starts speaking while the agent is mid-response, we must cancel TTS immediately and process the new utterance. Without this, the AI feels robotic. Silero VAD running locally makes the detection free (~5ms).</p>
+
+  <div class="diagram-panel">
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant C as Caller
+    participant V as Vonage
+    participant E as echokit-server
+    participant OAI as OpenAI TTS
+    participant EL as ElevenLabs STT
+
+    Note over E,OAI: Agent response is mid-stream
+    OAI-->>E: PCM chunk N
+    E->>V: Forward PCM chunk N
+    V->>C: Play audio
+
+    C->>V: Caller starts speaking (overlapping audio)
+    V->>E: Inbound PCM frames
+    E->>E: Silero VAD: isSpeech = true<br/>AND session.ttsPlaying = true
+
+    rect rgba(232, 86, 42, 0.08)
+        Note over E: BARGE-IN TRIGGERED
+        E-->>OAI: Abort TTS stream (cancel)
+        E->>V: Send BARGE_IN control event
+        V->>V: Halt playback to caller
+        E->>E: Flush outbound buffer<br/>Clear session.ttsPlaying
+    end
+
+    E->>EL: Begin streaming new utterance
+    Note over E,EL: Normal turn proceeds from here<br/>(see Sequence 02)
+    </div>
+  </div>
+
+  <div class="callout">
+    <div class="callout-icon">🔊</div>
+    <div class="callout-body">
+      <strong>Thresholds matter:</strong> minimum speech duration 200ms (filters out coughs and background noise); end-of-utterance silence 600ms. Tune per deployment environment — noisy call-center backgrounds may need 250ms / 700ms.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════
+       SEQUENCE 04 — RAG PIPELINE
+  ═════════════════════════════════════════════ -->
+  <div class="section-header" id="s4">
+    <span class="section-num">04</span>
+    <span class="section-title">RAG Pipeline — FAQ / Policy Questions</span>
+  </div>
+  <p class="section-desc">Zoomed in on Track A: a caller asks "Do you offer financing?" or "What are your hours?". Embedding, HNSW search, reranker, hallucination guard.</p>
+
+  <div class="diagram-panel">
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant E as echokit-server
+    participant A as agent-api
+    participant R as Redis
+    participant OAI as OpenAI
+    participant PG as Postgres<br/>(knowledge_chunks)
+    participant CE as Cross-Encoder<br/>(in-proc)
+
+    E->>A: POST /v1/rag/query<br/>{query: "do you offer financing?"}
+
+    A->>R: GET embed_cache:{sha256(q)}
+    alt cache miss
+        A->>OAI: text-embedding-3-small
+        OAI-->>A: vector(1536)
+        A->>R: SET embed_cache (TTL 1h)
+    else cache hit
+        R-->>A: vector(1536)
+    end
+
+    A->>PG: SELECT id, source, content,<br/>embedding &lt;=&gt; $1 AS distance<br/>FROM knowledge_chunks<br/>ORDER BY distance LIMIT 5
+    PG-->>A: top-5 chunks (HNSW, ~10ms)
+
+    A->>CE: Rerank (query, chunks)
+    CE-->>A: reordered, scored
+
+    alt best_score &lt; 0.75
+        Note over A: Hallucination guard TRIPPED
+        A-->>E: {grounded: false,<br/>answer: "Let me transfer you to a person"}
+    else grounded
+        A->>OAI: GPT-4o synthesis<br/>(system: "answer ONLY from context")
+        OAI-->>A: grounded answer
+        A-->>E: {grounded: true, answer, chunks}
+    end
+    </div>
+  </div>
+
+  <div class="callout callout-purple">
+    <div class="callout-icon">🧭</div>
+    <div class="callout-body">
+      <strong>The 0.75 threshold is load-bearing.</strong> It's the difference between an agent that confidently makes up a financing rate and one that transfers the caller to a human. Don't raise it without A/B testing transfer rate and caller satisfaction.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════
+       SEQUENCE 05 — VOICE-TO-SQL
+  ═════════════════════════════════════════════ -->
+  <div class="section-header" id="s5">
+    <span class="section-num">05</span>
+    <span class="section-title">Voice-to-SQL — "Blue Toyota SUV under $35k"</span>
+  </div>
+  <p class="section-desc">Track B in detail: entities extracted across turns, SQL generated by GPT-4o-mini, validated by a hard-coded guardrail, executed with parameterized values, and fallback-widened if the result set is empty.</p>
+
+  <div class="diagram-panel">
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant E as echokit-server
+    participant A as agent-api
+    participant R as Redis
+    participant OAI as GPT-4o-mini
+    participant V as SQL Validator
+    participant PG as Postgres<br/>(vehicles)
+
+    E->>A: POST /v1/sql/search<br/>{entities: {make:"Toyota",<br/>body_style:"SUV", color:"blue",<br/>price_max:35000}}
+
+    A->>R: GET vehicle_query:{hash(entities)}
+    alt cache hit (TTL 5m)
+        R-->>A: cached result set
+        A-->>E: vehicles[]
+    else cache miss
+        A->>OAI: Generate SQL + params<br/>(schema-aware system prompt)
+        OAI-->>A: {sql: "SELECT ... WHERE<br/>status='available' AND make ILIKE $1<br/>AND body_style ILIKE $2 ...",<br/>params: ['Toyota','%SUV%','%blue%',35000]}
+
+        A->>V: validateQuery(sql)
+        alt unsafe
+            V-->>A: throw (INSERT/UPDATE/DELETE<br/>or missing availability filter)
+            Note over A: Fall back to template query<br/>for top-10 search patterns
+        else safe
+            V-->>A: ✓
+        end
+
+        A->>PG: EXECUTE sql, params
+
+        alt rows returned
+            PG-->>A: vehicle[]
+            A->>R: SET vehicle_query (TTL 5m)
+            A-->>E: vehicles[]
+        else 0 rows
+            Note over A: Widen constraints in order:<br/>color → trim → year → +20% price
+            loop up to 4 retries
+                A->>PG: EXECUTE widened SQL
+                PG-->>A: result
+            end
+            A-->>E: vehicles[] + widened_constraints[]
+        end
+    end
+    </div>
+  </div>
+
+  <div class="callout callout-yellow">
+    <div class="callout-icon">🛡️</div>
+    <div class="callout-body">
+      <strong>Validator is a security surface.</strong> It rejects any string containing <code>INSERT|UPDATE|DELETE|DROP|ALTER|--</code> and requires <code>WHERE status = 'available'</code>. Plus parameterized-only — the LLM is <em>told</em> to use <code>$1, $2</code> and the validator refuses interpolated values. Defense in depth.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════
+       SEQUENCE 06 — HUMAN TRANSFER
+  ═════════════════════════════════════════════ -->
+  <div class="section-header" id="s6">
+    <span class="section-num">06</span>
+    <span class="section-title">Human Transfer — Escalating to a Sales Rep</span>
+  </div>
+  <p class="section-desc">Triggered by explicit caller request, repeated low confidence, or RAG hallucination guard tripping. Conversation summary + entities are persisted before the transfer so the human rep has context.</p>
+
+  <div class="diagram-panel">
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant C as Caller
+    participant V as Vonage
+    participant E as echokit-server
+    participant A as agent-api
+    participant PG as Postgres
+    participant Rep as Sales Rep Phone
+
+    C->>V: "I want to talk to a person."
+    V->>E: PCM frames
+    E->>A: POST /v1/agent/turn
+    A->>A: Classify intent = human_transfer
+
+    A->>PG: UPDATE call_sessions<br/>SET entities, transcript,<br/>outcome = 'transferred'<br/>WHERE vonage_call_id = ?
+    A->>PG: INSERT INTO leads<br/>(session_id, phone, interests)
+    PG-->>A: ✓
+
+    A-->>E: {action: "transfer",<br/>response_text: "Let me connect you..."<br/>transfer_to: "+15551234567"}
+
+    E->>V: Stream TTS "Let me connect you..."
+    V->>C: Play transfer message
+
+    E->>V: Vonage API: update call with<br/>connect NCCO → phone endpoint
+    V->>Rep: Ring rep's phone
+    Rep-->>V: Answer
+    V->>V: Bridge audio Caller ↔ Rep
+    Note over C,Rep: AI is out of the loop.<br/>Rep sees lead context in dashboard.
+
+    V->>E: call_ended event<br/>(outcome: transferred)
+    E->>PG: UPDATE call_sessions SET ended_at
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════
+       SEQUENCE 07 — SUPERVISOR LISTEN-IN
+  ═════════════════════════════════════════════ -->
+  <div class="section-header" id="s7">
+    <span class="section-num">07</span>
+    <span class="section-title">Supervisor Listen-In — Dashboard + WebRTC</span>
+  </div>
+  <p class="section-desc">A dealership manager opens the dashboard, picks an active call, and listens live via WebRTC while seeing the transcript stream in real time. Optionally takes over.</p>
+
+  <div class="diagram-panel">
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant M as Manager<br/>(Browser)
+    participant D as dashboard<br/>(Next.js)
+    participant E as echokit-server<br/>(mediasoup + Socket.io)
+    participant V as Vonage
+    participant C as Caller
+
+    M->>D: Open /supervisor
+    D->>D: NextAuth session check (role: manager)
+    D->>E: Socket.io connect /ws/supervisor<br/>(session token on handshake)
+    E-->>D: Active calls list
+
+    M->>D: Click call #abc123
+    D->>E: emit subscribe_call {call_uuid}
+
+    par Live events stream
+        E-->>D: transcript_partial
+        E-->>D: transcript_final
+        E-->>D: intent_classified
+        E-->>D: entities_extracted
+        E-->>D: vehicle_results
+        D->>D: Zustand store updates<br/>React re-renders
+    and WebRTC audio bridge
+        D->>E: RTC offer (SDP) via signaling WS
+        E->>E: mediasoup creates consumer<br/>for call_uuid producer
+        E-->>D: RTC answer (SDP)
+        D->>E: ICE candidates
+        E-->>D: ICE candidates
+        Note over D,E: DTLS-SRTP established
+        E->>D: Forked live audio (encrypted)
+        D->>M: Play through browser
+    end
+
+    Note over C,M: Manager hears caller + AI live.<br/>Caller does NOT hear manager.
+
+    opt Takeover
+        M->>D: Click "Transfer to Me"
+        D->>E: emit transfer_to_me<br/>{call_uuid, manager_phone}
+        E->>V: Vonage API: transfer call
+        V->>M: Ring manager's phone
+        Note over E: AI exits the loop.
+    end
+    </div>
+  </div>
+
+  <div class="callout callout-blue">
+    <div class="callout-icon">🌐</div>
+    <div class="callout-body">
+      <strong>Audio is forked, not teed from the caller side.</strong> echokit-server is already decoding both directions for VAD/STT; mediasoup publishes the same PCM to an SFU channel per call_uuid. Supervisor joins as a consumer. Listen-only by default — mic is muted until explicit takeover.
+    </div>
+  </div>
+
+
+  <!-- ════════════════════════════════════════════
+       SEQUENCE 08 — NIGHTLY INGESTION
+  ═════════════════════════════════════════════ -->
+  <div class="section-header" id="s8">
+    <span class="section-num">08</span>
+    <span class="section-title">Nightly Ingestion — Knowledge Base Refresh</span>
+  </div>
+  <p class="section-desc">One-shot Railway cron at 02:00 picks up any changed docs (FAQ, policies, promos, financing terms), chunks, re-embeds, and upserts. Separate from the hot path — if it fails, live calls still work with yesterday's embeddings.</p>
+
+  <div class="diagram-panel">
+    <div class="mermaid">
+sequenceDiagram
+    autonumber
+    participant Cron as Railway Cron<br/>(0 2 * * *)
+    participant W as ingestion-worker
+    participant FS as Source Docs<br/>(R2 / Google Drive)
+    participant A as agent-api
+    participant OAI as OpenAI<br/>text-embedding-3-small
+    participant PG as Postgres<br/>(knowledge_chunks)
+
+    Cron->>W: Start python ingest.py
+    W->>FS: List source docs<br/>(FAQ, policy, promo, financing)
+    FS-->>W: doc list + last_modified
+
+    loop For each changed doc
+        W->>FS: Fetch content
+        FS-->>W: text
+        W->>W: Recursive char split<br/>(512 tokens, 50 overlap)
+    end
+
+    W->>W: Batch chunks (≤ 100/batch)
+
+    loop For each batch
+        W->>A: POST /v1/embeddings<br/>{texts: [...], cache: false}
+        A->>OAI: batch embed
+        OAI-->>A: vectors[]
+        A-->>W: embeddings[]
+        W->>PG: UPSERT knowledge_chunks<br/>(id, source, content,<br/>embedding, metadata)
+    end
+
+    W->>PG: REINDEX (optional, weekly)
+    PG-->>W: ✓
+    W->>Cron: Exit 0
+    Note over Cron,PG: Live RAG traffic uses new<br/>embeddings on next query.
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <div class="callout-icon">🌙</div>
+    <div class="callout-body">
+      <strong>Why a cron and not streaming?</strong> Dealership knowledge docs change slowly (policies monthly, FAQ weekly, promos weekly). Batch embedding is cheaper and simpler than CDC. If a promo needs same-day propagation, manually trigger <code>railway run --service ingestion-worker python ingest.py</code>.
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>
+  <span>Car Dealership Voice AI · Sequence Diagrams v1.0</span>
+  <span>Companion to architecture-overview.md · Rendered with Mermaid</span>
+</footer>
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      // Canvas
+      background: '#0f1318',
+      primaryColor: '#161b22',
+      primaryTextColor: '#e6edf3',
+      primaryBorderColor: '#21262d',
+      lineColor: '#7d8590',
+      secondaryColor: '#161b22',
+      tertiaryColor: '#0f1318',
+
+      // Sequence-specific
+      actorBkg: '#161b22',
+      actorBorder: '#e8562a',
+      actorTextColor: '#e6edf3',
+      actorLineColor: '#484f58',
+      signalColor: '#e6edf3',
+      signalTextColor: '#e6edf3',
+      labelBoxBkgColor: '#161b22',
+      labelBoxBorderColor: '#e8562a',
+      labelTextColor: '#e6edf3',
+      loopTextColor: '#e6edf3',
+      noteBorderColor: '#bc8cff',
+      noteBkgColor: 'rgba(188,140,255,0.08)',
+      noteTextColor: '#e6edf3',
+      activationBorderColor: '#58a6ff',
+      activationBkgColor: 'rgba(88,166,255,0.1)',
+      sequenceNumberColor: '#e8562a',
+
+      // Typography
+      fontFamily: "'IBM Plex Mono', monospace",
+      fontSize: '13px'
+    },
+    sequence: {
+      diagramMarginX: 40,
+      diagramMarginY: 20,
+      actorMargin: 80,
+      boxMargin: 10,
+      boxTextMargin: 5,
+      noteMargin: 10,
+      messageMargin: 40,
+      mirrorActors: false,
+      wrap: true,
+      showSequenceNumbers: false,
+      useMaxWidth: true
+    }
+  });
+</script>
+
+</body>
+</html>
