@@ -1,0 +1,129 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://car-dealership-voice-ai/contracts/session.schema.json",
+  "title": "Session",
+  "description": "Per-call working memory. Stored in Redis under key `session:{call_uuid}` with TTL 2h.",
+  "type": "object",
+  "required": ["call_uuid", "caller_phone_hash", "started_at", "entities", "conversation_history"],
+  "additionalProperties": false,
+  "properties": {
+    "call_uuid": {
+      "type": "string",
+      "description": "Vonage-assigned UUID for this call. Primary key across all services.",
+      "minLength": 1
+    },
+    "vonage_conversation_uuid": {
+      "type": "string",
+      "description": "Vonage conversation UUID (distinct from call UUID)."
+    },
+    "caller_phone_hash": {
+      "type": "string",
+      "description": "SHA-256 hash of the E.164 caller number. Never store raw phone numbers after call ends.",
+      "minLength": 64,
+      "maxLength": 64
+    },
+    "caller_phone_last4": {
+      "type": "string",
+      "description": "Last 4 digits of caller number for UX display (e.g., 'xxx-xxx-1234').",
+      "pattern": "^[0-9]{4}$"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp when session was created."
+    },
+    "ended_at": {
+      "type": ["string", "null"],
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp when call ended. Null while call is active."
+    },
+    "entities": {
+      "$ref": "#/$defs/SessionEntities"
+    },
+    "conversation_history": {
+      "type": "array",
+      "description": "Turn-by-turn history, trimmed to last 6 turns when passed to LLM.",
+      "items": { "$ref": "#/$defs/ConversationTurn" }
+    },
+    "tts_playing": {
+      "type": "boolean",
+      "description": "True while outbound TTS is streaming. Used by barge-in logic.",
+      "default": false
+    },
+    "intent": {
+      "type": ["string", "null"],
+      "description": "Last classified intent.",
+      "enum": [
+        "vehicle_search",
+        "pricing_query",
+        "availability_check",
+        "financing_inquiry",
+        "dealership_info",
+        "appointment_request",
+        "human_transfer",
+        null
+      ]
+    },
+    "transfer_attempts": {
+      "type": "integer",
+      "description": "Count of low-confidence events. Triggers human transfer at 2.",
+      "minimum": 0,
+      "default": 0
+    }
+  },
+  "$defs": {
+    "SessionEntities": {
+      "type": "object",
+      "description": "Merged entities across conversation turns. Enables multi-turn refinement.",
+      "additionalProperties": false,
+      "properties": {
+        "make": { "type": ["string", "null"] },
+        "model": { "type": ["string", "null"] },
+        "year_min": { "type": ["integer", "null"], "minimum": 1900, "maximum": 2100 },
+        "year_max": { "type": ["integer", "null"], "minimum": 1900, "maximum": 2100 },
+        "trim": { "type": ["string", "null"] },
+        "color_ext": { "type": ["string", "null"] },
+        "color_int": { "type": ["string", "null"] },
+        "body_style": { "type": ["string", "null"] },
+        "transmission": { "type": ["string", "null"] },
+        "fuel_type": { "type": ["string", "null"] },
+        "price_min": { "type": ["number", "null"], "minimum": 0 },
+        "price_max": { "type": ["number", "null"], "minimum": 0 },
+        "mileage_max": { "type": ["integer", "null"], "minimum": 0 },
+        "features": {
+          "type": "array",
+          "items": { "type": "string" },
+          "default": []
+        },
+        "condition": {
+          "type": ["string", "null"],
+          "enum": ["new", "used", "cpo", null]
+        }
+      }
+    },
+    "ConversationTurn": {
+      "type": "object",
+      "required": ["role", "text", "ts"],
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "type": "string",
+          "enum": ["user", "assistant"]
+        },
+        "text": {
+          "type": "string"
+        },
+        "ts": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confidence": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "description": "STT confidence for user turns."
+        }
+      }
+    }
+  }
+}
