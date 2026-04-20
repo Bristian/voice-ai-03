@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://car-dealership-voice-ai/contracts/ws-events.schema.json",
+  "title": "WebSocketEvents",
+  "description": "Event payloads for the supervisor dashboard Socket.io channel (echokit-server → dashboard).",
+  "type": "object",
+  "$defs": {
+    "CallStarted": {
+      "type": "object",
+      "required": ["type", "call_uuid", "started_at"],
+      "properties": {
+        "type": { "const": "call_started" },
+        "call_uuid": { "type": "string" },
+        "caller_phone_masked": {
+          "type": "string",
+          "description": "Masked format, e.g., '+1 (xxx) xxx-1234'."
+        },
+        "started_at": { "type": "string", "format": "date-time" }
+      }
+    },
+    "TranscriptPartial": {
+      "type": "object",
+      "required": ["type", "call_uuid", "text"],
+      "properties": {
+        "type": { "const": "transcript_partial" },
+        "call_uuid": { "type": "string" },
+        "text": { "type": "string" },
+        "confidence": { "type": ["number", "null"] }
+      }
+    },
+    "TranscriptFinal": {
+      "type": "object",
+      "required": ["type", "call_uuid", "role", "text", "ts"],
+      "properties": {
+        "type": { "const": "transcript_final" },
+        "call_uuid": { "type": "string" },
+        "role": { "type": "string", "enum": ["user", "assistant"] },
+        "text": { "type": "string" },
+        "ts": { "type": "string", "format": "date-time" },
+        "confidence": { "type": ["number", "null"] }
+      }
+    },
+    "IntentClassified": {
+      "type": "object",
+      "required": ["type", "call_uuid", "intent", "confidence"],
+      "properties": {
+        "type": { "const": "intent_classified" },
+        "call_uuid": { "type": "string" },
+        "intent": { "type": "string" },
+        "confidence": { "type": "number" }
+      }
+    },
+    "EntitiesExtracted": {
+      "type": "object",
+      "required": ["type", "call_uuid", "entities"],
+      "properties": {
+        "type": { "const": "entities_extracted" },
+        "call_uuid": { "type": "string" },
+        "entities": { "$ref": "session.schema.json#/$defs/SessionEntities" }
+      }
+    },
+    "VehicleResults": {
+      "type": "object",
+      "required": ["type", "call_uuid", "vehicles"],
+      "properties": {
+        "type": { "const": "vehicle_results" },
+        "call_uuid": { "type": "string" },
+        "vehicles": {
+          "type": "array",
+          "items": { "$ref": "vehicle.schema.json" }
+        }
+      }
+    },
+    "CallEnded": {
+      "type": "object",
+      "required": ["type", "call_uuid", "ended_at", "outcome"],
+      "properties": {
+        "type": { "const": "call_ended" },
+        "call_uuid": { "type": "string" },
+        "ended_at": { "type": "string", "format": "date-time" },
+        "outcome": {
+          "type": "string",
+          "enum": ["answered", "transferred", "dropped", "failed"]
+        },
+        "duration_seconds": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
