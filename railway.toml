@@ -1,0 +1,12 @@
+# Railway build config at the repo root.
+#
+# Service creation is done through the Railway UI — this file only configures
+# how Railway should build code from this repo. The actual build steps live
+# in nixpacks.toml next to this file.
+#
+# When you add more services in later slices (agent-api, dashboard, etc.),
+# each service's build will be directed by the files in that subdirectory
+# or by a service-level override in the Railway dashboard.
+
+[build]
+  builder = "nixpacks"
