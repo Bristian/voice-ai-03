@@ -1,0 +1,21 @@
+# Nixpacks build config for echokit-server on Railway.
+# Railway reads this when the service's root directory is set to echokit-server/.
+# But we are ALSO providing a build config at the repo root so the contracts
+# workspace is available.
+
+[phases.setup]
+nixPkgs = ["nodejs_20"]
+
+[phases.install]
+# Install from the repo root (npm workspaces) then build contracts
+cmds = [
+  "cd /app && npm install --workspaces --include-workspace-root",
+  "cd /app/shared/typescript && npm run build"
+]
+
+[phases.build]
+# Nothing to build for echokit-server itself (plain JS)
+cmds = ["echo 'echokit-server uses plain JS — no build step needed'"]
+
+[start]
+cmd = "node echokit-server/src/server.js"

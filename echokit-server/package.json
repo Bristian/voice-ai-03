@@ -1,0 +1,24 @@
+{
+  "name": "echokit-server",
+  "version": "0.1.0",
+  "description": "WebSocket audio orchestrator — Vonage telephony bridge",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@voiceai/contracts": "*",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "pino": "^9.4.0",
+    "pino-pretty": "^11.2.2",
+    "ws": "^8.18.0",
+    "zod": "^3.23.8"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
