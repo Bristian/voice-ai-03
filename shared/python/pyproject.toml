@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "voiceai-contracts"
+version = "0.1.0"
+description = "Shared Pydantic v2 models for Car Dealership Voice AI services"
+requires-python = ">=3.12"
+authors = [{ name = "Car Dealership Voice AI" }]
+dependencies = [
+  "pydantic>=2.6,<3.0"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"voiceai_contracts" = ["py.typed"]

@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://car-dealership-voice-ai/contracts/vehicle.schema.json",
+  "title": "Vehicle",
+  "description": "A single vehicle record returned by the Voice-to-SQL agent. Mirrors the public-facing subset of the `vehicles` table (no embedding, no internal IDs).",
+  "type": "object",
+  "required": ["vin", "make", "model", "year", "price", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "vin": {
+      "type": "string",
+      "description": "17-character Vehicle Identification Number.",
+      "minLength": 17,
+      "maxLength": 17
+    },
+    "make": {
+      "type": "string",
+      "description": "Manufacturer, e.g., 'Toyota'."
+    },
+    "model": {
+      "type": "string",
+      "description": "Model name, e.g., 'Camry'."
+    },
+    "year": {
+      "type": "integer",
+      "minimum": 1900,
+      "maximum": 2100
+    },
+    "trim": {
+      "type": ["string", "null"],
+      "description": "Trim level, e.g., 'XSE', 'Sport'."
+    },
+    "color_ext": {
+      "type": ["string", "null"],
+      "description": "Exterior color."
+    },
+    "color_int": {
+      "type": ["string", "null"],
+      "description": "Interior color."
+    },
+    "mileage": {
+      "type": ["integer", "null"],
+      "minimum": 0
+    },
+    "price": {
+      "type": "number",
+      "description": "USD. NUMERIC(10,2) in the database.",
+      "minimum": 0
+    },
+    "condition": {
+      "type": ["string", "null"],
+      "enum": ["new", "used", "cpo", null]
+    },
+    "transmission": {
+      "type": ["string", "null"]
+    },
+    "fuel_type": {
+      "type": ["string", "null"]
+    },
+    "body_style": {
+      "type": ["string", "null"],
+      "description": "e.g., 'SUV', 'Sedan', 'Truck'."
+    },
+    "features": {
+      "type": "array",
+      "description": "Array of feature strings, e.g., ['AWD', 'Sunroof', 'Apple CarPlay'].",
+      "items": { "type": "string" },
+      "default": []
+    },
+    "status": {
+      "type": "string",
+      "enum": ["available", "sold", "hold"]
+    },
+    "description": {
+      "type": ["string", "null"],
+      "description": "Natural-language description used for embedding."
+    }
+  }
+}
